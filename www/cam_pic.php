@@ -8,7 +8,7 @@
       $preview_delay = 10000;
    }
    usleep($preview_delay);
-   $pcDebug = 1;
+   $pcDebug = 0;
    if ($pcDebug == 1)
    {
      readfile("cam.jpg");
