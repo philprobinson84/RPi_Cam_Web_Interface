@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <?php
-   require_once(BASE_DIR.'/config.php');
    $config = array();
    $debugString = "";
 
@@ -125,7 +124,7 @@
             break;
          default: $value = $config[$selKey]; break;
       }
-      echo "<input type='text' size=$size id='$id' value='$value'>";
+      echo "<input type='text' class='form-control' size=$size id='$id' value='$value'>";
    }
 
    function getImgWidth() {
@@ -213,10 +212,32 @@
 
       <title><?php echo CAM_STRING; ?></title>
       <link rel="stylesheet" href="css/style_minified.css" />
+      <link rel="stylesheet" href="css/preview.css" />
       <link rel="stylesheet" href="<?php echo getStyle(); ?>" />
       <script src="js/style_minified.js"></script>
       <script src="js/script.js"></script>
       <script src="js/pipan.js"></script>
+      <script src="js/preview.js"></script>
+      <?php if (isset($thumbnails)):?>
+      <script>
+         var thumbnails = <?php echo json_encode($thumbnails) ?>;
+         var linksBase = 'preview.php?preview=';
+         var mediaBase = "<?php echo MEDIA_PATH . '/' ?>";
+         var previewWidth = <?php echo $previewSize ?>;
+         var convertCmd = "<?php echo file_get_contents(BASE_DIR . '/' . CONVERT_CMD) ?>";
+      </script>
+    <?php endif;?>
    </head>
-   <body onload="setTimeout('init(<?php echo "$mjpegmode, $video_fps, $divider" ?>);', 100);">
-  <?php require_once(BASE_DIR.'/menu.php');?>
+   <?php
+   $onloadString = "";
+switch ($thisPage)
+{
+  case "schedule.php":
+    $onloadString = "schedule_rows()";
+    break;
+  case "index.php":
+    $onloadString = "setTimeout('init($mjpegmode, $video_fps, $divider)', 100)";
+    break;
+}
+   ?>
+   <body onload="<?php echo $onloadString;?>">

@@ -1,6 +1,9 @@
 <?php
 define('BASE_DIR', dirname(__FILE__));
+require_once(BASE_DIR.'/config.php');
+$thisPage = "index.php";
 require_once(BASE_DIR.'/header.php');
+require_once(BASE_DIR.'/menu.php');
 ?>
 
       <div class="container-fluid text-center liveimage">

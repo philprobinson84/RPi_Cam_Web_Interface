@@ -1,7 +1,7 @@
 <?php
-   define('BASE_DIR', dirname(__FILE__));
-   require_once(BASE_DIR.'/config.php');
-  
+define('BASE_DIR', dirname(__FILE__));
+require_once(BASE_DIR.'/config.php');
+$thisPage = "settings.php";
    //Text labels here
    define('BTN_DOWNLOAD', 'Download');
    define('BTN_DELETE', 'Delete');
@@ -15,12 +15,12 @@
    define('TXT_PREVIEW', 'Preview');
    define('TXT_THUMB', 'Thumb');
    define('TXT_FILES', 'Files');
-   
+
    define('CONVERT_CMD', 'convertCmd.txt');
-   
+
    //Set to top or bottom to position controls
    define('CONTROLS_POS', 'top');
-   
+
    //Set size defaults and try to get from cookies
    $previewSize = 640;
    $thumbSize = 96;
@@ -47,7 +47,7 @@
    $pFile = "";
    $tFile = "";
    $debugString = "";
-   
+
    if(isset($_GET['preview'])) {
       $tFile = $_GET['preview'];
       $pFile = dataFilename($tFile);
@@ -75,7 +75,7 @@
       readfile("$zipname");
       if(file_exists($zipname)){
           unlink($zipname);
-      }                  
+      }
       return;
    }
    else if (isset($_POST['delete1'])) {
@@ -117,7 +117,7 @@
                foreach($_POST['check_list'] as $check) {
                   deleteFile($check);
                }
-            }        
+            }
             maintainFolders(MEDIA_PATH, false, false);
             break;
          case 'updateSizeOrder':
@@ -125,24 +125,24 @@
                $previewSize = $_POST['previewSize'];
                if ($previewSize < 100 || $previewSize > 1920) $previewSize = 640;
                setcookie("previewSize", $previewSize, time() + (86400 * 365), "/");
-            }        
+            }
             if(!empty($_POST['thumbSize'])) {
                $thumbSize = $_POST['thumbSize'];
                if ($thumbSize < 32 || $thumbSize > 320) $thumbSize = 96;
                setcookie("thumbSize", $thumbSize, time() + (86400 * 365), "/");
-            }        
+            }
             if(!empty($_POST['sortOrder'])) {
                $sortOrder = $_POST['sortOrder'];
                setcookie("sortOrder", $sortOrder, time() + (86400 * 365), "/");
-            }        
+            }
             if(!empty($_POST['showTypes'])) {
                $showTypes = $_POST['showTypes'];
                setcookie("showTypes", $showTypes, time() + (86400 * 365), "/");
-            }        
+            }
             if(!empty($_POST['timeFilter'])) {
                $timeFilter = $_POST['timeFilter'];
                setcookie("timeFilter", $timeFilter, time() + (86400 * 365), "/");
-            }        
+            }
             break;
          case 'zipSel':
             if (!empty($_POST['check_list'])) {
@@ -151,7 +151,7 @@
             break;
       }
    }
-  
+
    function getZip($files) {
       $zipname = MEDIA_PATH . '/cam_' . date("Ymd_His") . '.zip';
       writeLog("Making zip $zipname");
@@ -226,7 +226,7 @@
       }
       return $empty && !$root && rmdir($path);
    }
-   
+
    //function to draw 1 file on the page
    function drawFile($f, $ts, $sel) {
       $fType = getFileType($f);
@@ -235,7 +235,7 @@
       $lapseCount = "";
       switch ($fType) {
          case 'v': $fIcon = 'video.png'; break;
-         case 't': 
+         case 't':
             $fIcon = 'timelapse.png';
             $lapseCount = '(' . count(findLapseFiles($f)). ')';
             break;
@@ -270,7 +270,7 @@
       if ($fsz > 0) echo "</a>";
       echo "</fieldset> ";
    }
-   
+
    function getThumbnails() {
       global $sortOrder;
       global $showTypes;
@@ -299,14 +299,14 @@
                   $thumbnails[] = $file;
               }
                elseif($showTypes == '3' && ($fType == 'v')) {
-                  $thumbnails[] = $file; 
+                  $thumbnails[] = $file;
                }
             }
          }
       }
-      return $thumbnails;   
+      return $thumbnails;
    }
-   
+
    function diskUsage() {
       //Get disk data
       $totalSize = round(disk_total_space(BASE_DIR . '/' . MEDIA_PATH) / 1048576); //MB
@@ -323,11 +323,11 @@
          echo "<div style='z-index:-1;position:absolute;top:0px;width:$percentUsed%;background-color:$colour;'>&nbsp;</div>";
       echo '</div>';
    }
-   
+
    function settingsControls() {
       global $previewSize,$thumbSize,$sortOrder, $showTypes;
       global $timeFilter, $timeFilterMax;
-      
+
       echo TXT_PREVIEW . " <input type='text' size='4' name='previewSize' value='$previewSize'>";
       echo "&nbsp;&nbsp;" . TXT_THUMB . " <input type='text' size='3' name='thumbSize' value='$thumbSize'>";
       echo '&nbsp;Sort&nbsp;<select id="sortOrder" name="sortOrder">';
@@ -358,41 +358,14 @@
       echo '</select>';
       echo "&nbsp;<button class='btn btn-primary' type='submit' name='action' value='updateSizeOrder'>" . BTN_UPDATESIZEORDER . "</button><br>";
    }
-   
+
    $convertCmd = file_get_contents(BASE_DIR . '/' . CONVERT_CMD);
    $thumbnails = getThumbnails();
+   require_once(BASE_DIR.'/header.php');
+   require_once(BASE_DIR.'/menu.php');
 ?>
-<!DOCTYPE html>
-<html>
-   <head>
-      <meta name="viewport" content="width=550, initial-scale=1">
-      <title><?php echo CAM_STRING; ?> Download</title>
-      <link rel="stylesheet" href="css/style_minified.css" />
-      <link rel="stylesheet" href="css/preview.css" />
-      <link rel="stylesheet" href="<?php echo getStyle(); ?>" />
-      <script src="js/style_minified.js"></script>
-      <script src="js/script.js"></script>
-      <script src="js/preview.js"></script>
-      <script>
-         var thumbnails = <?php echo json_encode($thumbnails) ?>;
-         var linksBase = 'preview.php?preview=';
-         var mediaBase = "<?php echo MEDIA_PATH . '/' ?>";
-         var previewWidth = <?php echo $previewSize ?>;
-         var convertCmd = "<?php echo file_get_contents(BASE_DIR . '/' . CONVERT_CMD) ?>";
-      </script>
-
-   </head>
-   <body>
-      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-         <div class="container">
-            <div class="navbar-header">
-               <a class="navbar-brand" href="<?php echo ROOT_PHP; ?>"><span class="glyphicon glyphicon-chevron-left"></span>Back - <?php echo CAM_STRING; ?></a>
-            </div>
-         </div>
-      </div>
-    
       <div id="progress" style="text-align:center;margin-left:20px;width:500px;border:1px solid #ccc;">&nbsp;</div>
-    
+
       <div class="container-fluid">
       <form action="preview.php" method="POST">
          <div id='preview' style="display: none; min-height: <?php echo $previewSize ?>px">
@@ -403,7 +376,7 @@
 
                <button class='btn btn-primary' type='submit' name='download1'><?php echo BTN_DOWNLOAD; ?></button>
                <button class='btn btn-danger' type='submit' name='delete1'><?php echo BTN_DELETE; ?></button>
-               
+
                <button class='btn btn-primary' type='submit' name='convert'><?php echo BTN_CONVERT ?></button>
                <br>
             </h1>
@@ -442,14 +415,14 @@
          if(CONTROLS_POS == 'bottom') {echo "<br>";settingsControls();}
       ?>
       </form>
-      
+
       <form id="zipform" method="post" action="preview.php" style="display:none;">
          <input id="zipdownload" type="hidden" name="zipdownload"/>
       </form>
-      
+
       </div>
-      
-      <?php 
+
+      <?php
       if ($zipname) {
          echo '<script language="javascript">get_zip_progress("' . $zipname . '");</script>';
       } else {

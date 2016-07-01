@@ -1,7 +1,8 @@
 <?php
    define('BASE_DIR', dirname(__FILE__));
    require_once(BASE_DIR.'/config.php');
-   //Text labels here 
+   $thisPage = "schedule.php";
+   //Text labels here
    define('BTN_START', 'Start');
    define('BTN_STOP', 'Stop');
    define('BTN_SAVE', 'Save Settings');
@@ -21,13 +22,13 @@
 
    define('SCHEDULE_CONFIG', 'schedule.json');
    define('SCHEDULE_CONFIGBACKUP', 'scheduleBackup.json');
- 
+
    define('SCHEDULE_START', '1');
    define('SCHEDULE_STOP', '0');
    define('SCHEDULE_RESET', '9');
-   
+
    define('SCHEDULE_ZENITH', '90.8');
- 
+
    define('SCHEDULE_FIFOIN', 'Fifo_In');
    define('SCHEDULE_FIFOOUT', 'Fifo_Out');
    define('SCHEDULE_CMDPOLL', 'Cmd_Poll');
@@ -56,11 +57,11 @@
    define('SCHEDULE_COMMANDSOFF', 'Commands_Off');
    define('SCHEDULE_MODES', 'Modes');
    define('SCHEDULE_TIMES', 'Times');
-   
+
    $debugString = "";
    $schedulePars = array();
    $schedulePars = loadPars(BASE_DIR . '/' . SCHEDULE_CONFIG);
-   
+
    $cliCall = isCli();
    $showLog = false;
    $schedulePID = getSchedulePID();
@@ -112,14 +113,14 @@
             break;
       }
    }
-   
+
    function isCli() {
        if( defined('STDIN') ) {
            return true;
        }
        if( empty($_SERVER['REMOTE_ADDR']) and !isset($_SERVER['HTTP_USER_AGENT']) and count($_SERVER['argv']) > 0) {
            return true;
-       } 
+       }
        return false;
    }
 
@@ -137,7 +138,7 @@
       }
       return $pidId;
    }
-   
+
    function startSchedule() {
       $ret = exec("php schedule.php >/dev/null &");
    }
@@ -254,7 +255,7 @@
       if ($d < 5) $period = $periods[$d]; else $period = $d-4;
       echo '<table class="settingsTable">';
       echo '<tr style="text-align:center;"><td>Time Offset: ' . getTimeOffset() . '</td><td>Sunrise: ' . getSunrise(SUNFUNCS_RET_STRING) . '</td><td>Sunset: ' . getSunset(SUNFUNCS_RET_STRING) . '</td><td>Current: ' . getCurrentLocalTime(false) . "</td><td>Period: $period </td></tr></table>";
-      
+
       $columns = explode(';', LBL_COLUMNS);
       echo '<table class="settingsTable">';
       $h = -1;
@@ -305,31 +306,10 @@
    }
 
    function mainHTML() {
-      global $schedulePID, $schedulePars, $debugString, $showLog;
-      echo '<!DOCTYPE html>';
-      echo '<html>';
-         echo '<head>';
-            echo '<meta name="viewport" content="width=550, initial-scale=1">';
-            echo '<title>' . CAM_STRING . ' Schedule</title>';
-            echo '<link rel="stylesheet" href="css/style_minified.css" />';
-            echo '<link rel="stylesheet" href="' . getStyle() . '" />';
-            echo '<script src="js/style_minified.js"></script>';
-            echo '<script src="js/script.js"></script>';
-         echo '</head>';
-         echo '<body onload="schedule_rows()">';
-            echo '<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">';
-               echo '<div class="container">';
-                  echo '<div class="navbar-header">';
-                     if ($showLog) {
-                        echo '<a class="navbar-brand" href="schedule.php">';
-                     } else {
-                        echo '<a class="navbar-brand" href="' . ROOT_PHP . '">';
-                     }
-                     echo '<span class="glyphicon glyphicon-chevron-left"></span>Back - ' . CAM_STRING . '</a>';
-                  echo '</div>';
-               echo '</div>';
-            echo '</div>';
-          
+      global $schedulePID, $schedulePars, $debugString, $showLog, $thisPage;
+      require_once(BASE_DIR.'/header.php');
+      require_once(BASE_DIR.'/menu.php');
+
             echo '<div class="container-fluid">';
                echo '<form action="schedule.php" method="POST">';
                   if ($debugString) echo $debugString . "<br>";
@@ -424,7 +404,7 @@ function cmdHelp() {
    echo "</div>";
    echo "</div>";
 }
- 
+
    function sendReset() {
       global $schedulePars;
       writeLog("Send Schedule reset");
@@ -433,7 +413,7 @@ function cmdHelp() {
       fclose($fifo);
       sleep(1);
    }
-   
+
    function sendCmds($cmdString) {
       global $schedulePars;
 
@@ -448,18 +428,18 @@ function cmdHelp() {
          }
       }
    }
-   
+
    function getTimeOffset() {
       global $schedulePars;
       if (is_numeric($schedulePars[SCHEDULE_GMTOFFSET])) {
          $offset = $schedulePars[SCHEDULE_GMTOFFSET];
       } else {
          date_default_timezone_set($schedulePars[SCHEDULE_GMTOFFSET]);
-         $offset = date_offset_get(new DateTime("now")) / 3600; 
+         $offset = date_offset_get(new DateTime("now")) / 3600;
       }
       return $offset;
    }
-   
+
    function getCurrentLocalTime($Minutes) {
       $localTime = strftime("%H:%M");
       if ($Minutes) {
@@ -467,14 +447,14 @@ function cmdHelp() {
       }
       return $localTime;
    }
-   
+
    function getSunrise($format) {
       global $schedulePars;
       return date_sunrise(time(), $format, $schedulePars[SCHEDULE_LATITUDE], $schedulePars[SCHEDULE_LONGTITUDE], SCHEDULE_ZENITH, getTimeOffset());
    }
-   
+
    function getSunset($format) {
-      global $schedulePars; 
+      global $schedulePars;
       return date_sunset(time(), $format, $schedulePars[SCHEDULE_LATITUDE], $schedulePars[SCHEDULE_LONGTITUDE], SCHEDULE_ZENITH, getTimeOffset());
    }
 
@@ -496,7 +476,7 @@ function cmdHelp() {
       }
       return $maxLessI + 4;
    }
-   
+
    //Return period of day 0=Night,1=Dawn,2=Day,3=Dusk
    function dayPeriod() {
       global $schedulePars;
@@ -541,7 +521,7 @@ function cmdHelp() {
       }
       return $period;
    }
-   
+
    function openPipe($pipeName) {
       if (!file_exists($pipeName)) {
          writeLog("Making Pipe to receive capture commands $pipeName");
@@ -554,7 +534,7 @@ function cmdHelp() {
       stream_set_blocking($pipe,false);
       return $pipe;
    }
-   
+
    function checkMotion($pipe) {
       try {
          $ret = fread($pipe, 1);
@@ -592,9 +572,9 @@ function cmdHelp() {
                      $purgeCount++;
                   }
                }
-            } 
+            }
          }
-         
+
       }
       if ($schedulePars[SCHEDULE_PURGESPACEMODE] > 0) {
          $totalSize = disk_total_space(BASE_DIR . '/' . MEDIA_PATH) / 1024; //KB
@@ -679,7 +659,7 @@ function cmdHelp() {
                   }
                } else {
                   writeLog('Stop capture request ignored, already stopped');
-                  
+
                }
             } else if ($cmd == SCHEDULE_START || $autocapture == 1) {
                if ($lastDayPeriod >= 0) {
@@ -706,7 +686,7 @@ function cmdHelp() {
             } else if ($cmd !="") {
                writeLog("Ignore FIFO char $cmd");
             }
-            
+
             //slow Poll actions done every 10 fast loops times
             $slowPoll--;
             if ($slowPoll < 0) {
@@ -781,7 +761,7 @@ function cmdHelp() {
          }
       }
    }
-   
+
    if (!$cliCall) {
       mainHTML();
    } else {

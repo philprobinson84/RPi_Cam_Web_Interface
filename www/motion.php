@@ -1,22 +1,21 @@
-<!DOCTYPE html>
 <?php
    define('BASE_DIR', dirname(__FILE__));
    require_once(BASE_DIR.'/config.php');
-
+$thisPage = "motion.php";
    //Text labels here
    define('BTN_SAVE', 'Save Settings');
    define('BTN_SHOWALL', 'Show All');
    define('BTN_SHOWLESS', 'Show Less');
    define('BTN_BACKUP', 'Backup');
    define('BTN_RESTORE', 'Restore');
-   
+
    define('MOTION_URL', "http://127.0.0.1:6642/0/");
-   
+
    define('MOTION_CONFIGBACKUP', "motionPars.json");
    define('MOTION_PARS', "motionPars");
-   
+
    $filterPars = array("switchfilter","threshold","threshold_tune","noise_level","noise_tune","despeckle","despeckle_filter","area_detect","mask_file","smart_mask_speed","lightswitch","minimum_motion_frames","framerate","minimum_frame_time","netcam_url","netcam_userpass","gap","event_gap","on_event_start","on_event_end","on_motion_detected","on_area_detected");
-   
+
    $motionReady = checkMotion();
    $showAll = false;
    $debugString = "";
@@ -24,7 +23,7 @@
    if ($motionReady) {
       $motionConfig = file_get_contents(MOTION_URL . "config/list");
       $motionPars = parse_ini_string($motionConfig, False, INI_SCANNER_RAW);
-      
+
       //Process any POST data
       if(isset($_POST['action'])) {
          switch($_POST['action']) {
@@ -68,7 +67,7 @@
          }
       }
    }
-   
+
    function checkMotion() {
       $pids = array();
       exec("pgrep motion", $pids);
@@ -78,15 +77,15 @@
          return true;
       }
    }
-   
+
    function setMotionPar($k, $v) {
       global $debugString;
-   
-      $t = file_get_contents(MOTION_URL . "config/set?" . $k ."=" . urlencode($v)); 
+
+      $t = file_get_contents(MOTION_URL . "config/set?" . $k ."=" . urlencode($v));
    }
-   
+
    function writeMotionPars() {
-      $t = file_get_contents(MOTION_URL . "config/write"); 
+      $t = file_get_contents(MOTION_URL . "config/write");
    }
 
    function pauseMotion() {
@@ -120,25 +119,11 @@
       }
       echo "</table>";
    }
+   require_once(BASE_DIR.'/header.php');
+   require_once(BASE_DIR.'/menu.php');
 ?>
-<html>
-   <head>
-      <meta name="viewport" content="width=550, initial-scale=1">
-      <title>RPi Cam Download</title>
-      <link rel="stylesheet" href="css/style_minified.css" />
-      <link rel="stylesheet" href="css/preview.css" />
-      <link rel="stylesheet" href="<?php echo getStyle(); ?>" />
-      <script src="js/style_minified.js"></script>
-   </head>
-   <body>
-      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-         <div class="container">
-            <div class="navbar-header">
-               <a class="navbar-brand" href="<?php echo ROOT_PHP; ?>"><span class="glyphicon glyphicon-chevron-left"></span>Back - <?php echo CAM_STRING; ?></a>
-            </div>
-         </div>
-      </div>
-    
+
+
       <div class="container-fluid">
       <form action="motion.php" method="POST">
       <?php
