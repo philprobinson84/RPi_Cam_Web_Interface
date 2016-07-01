@@ -1,0 +1,16 @@
+{
+  "name": "SmartCam",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "density": 1.0
+    }
+  ],
+  "theme_color": "#9E9E9E",
+  "background_color": "#9E9E9E",
+  "start_url": "index.php",
+  "display": "standalone",
+  "orientation": "portrait"
+}
