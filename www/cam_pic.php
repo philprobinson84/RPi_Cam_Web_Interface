@@ -8,6 +8,15 @@
       $preview_delay = 10000;
    }
    usleep($preview_delay);
-   readfile("/dev/shm/mjpeg/cam.jpg");
+   $pcDebug = 1;
+   if ($pcDebug == 1)
+   {
+     readfile("cam.jpg");
+   }
+   else
+   {
+     readfile("/dev/shm/mjpeg/cam.jpg");
+   }
+
 
 ?>

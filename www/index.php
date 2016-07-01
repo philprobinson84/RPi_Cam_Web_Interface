@@ -4,7 +4,7 @@
    require_once(BASE_DIR.'/config.php');
    $config = array();
    $debugString = "";
-   
+
    $options_mm = array('Average' => 'average', 'Spot' => 'spot', 'Backlit' => 'backlit', 'Matrix' => 'matrix');
    $options_em = array('Off' => 'off', 'Auto' => 'auto', 'Night' => 'night', 'Nightpreview' => 'nightpreview', 'Backlight' => 'backlight', 'Spotlight' => 'spotlight', 'Sports' => 'sports', 'Snow' => 'snow', 'Beach' => 'beach', 'Verylong' => 'verylong', 'Fixedfps' => 'fixedfps');
    $options_wb = array('Off' => 'off', 'Auto' => 'auto', 'Sun' => 'sun', 'Cloudy' => 'cloudy', 'Shade' => 'shade', 'Tungsten' => 'tungsten', 'Fluorescent' => 'fluorescent', 'Incandescent' => 'incandescent', 'Flash' => 'flash', 'Horizon' => 'horizon');
@@ -26,7 +26,7 @@
    $options_mf = array('Off' => '0', 'On' => '1');
    $options_cn = array('First' => '1', 'Second' => '2');
    $options_st = array('Off' => '0', 'On' => '1');
-   
+
    function initCamPos() {
       $tr = fopen("pipan_bak.txt", "r");
       if($tr){
@@ -58,7 +58,7 @@
          echo "</div>";
       }
    }
-  
+
    function pilight_controls() {
       echo "<tr>";
         echo "<td>Pi-Light:</td>";
@@ -79,16 +79,16 @@
          }
       }
    }
-   
-  
+
+
    function makeOptions($options, $selKey) {
       global $config;
       switch ($selKey) {
-         case 'flip': 
+         case 'flip':
             $cvalue = (($config['vflip'] == 'true') || ($config['vflip'] == 1) ? 2:0);
             $cvalue += (($config['hflip'] == 'true') || ($config['hflip'] == 1) ? 1:0);
             break;
-         case 'MP4Box': 
+         case 'MP4Box':
             $cvalue = $config[$selKey];
             if ($cvalue == 'background') $cvalue = 2;
             break;
@@ -110,7 +110,7 @@
       global $config, $debugString;
       if ($selKey == '') $selKey = $id;
       switch ($selKey) {
-         case 'tl_interval': 
+         case 'tl_interval':
             if (array_key_exists($selKey, $config)) {
                $value = $config[$selKey] / 10;
             } else {
@@ -128,7 +128,7 @@
       }
       echo "<input type='text' size=$size id='$id' value='$value'>";
    }
-   
+
    function getImgWidth() {
       global $config;
       if($config['vector_preview'])
@@ -136,7 +136,7 @@
       else
          return '';
    }
-   
+
    function getLoadClass() {
       global $config;
       if(array_key_exists('fullscreen', $config) && $config['fullscreen'] == 1)
@@ -152,7 +152,7 @@
          fclose($fp);
       }
    }
-   
+
    $toggleButton = "Simple";
    $displayStyle = 'style="display:block;"';
    if(isset($_COOKIE["display_mode"])) {
@@ -161,7 +161,7 @@
          $displayStyle = 'style="display:none;"';
       }
    }
-   
+
    $streamButton = "MJPEG-Stream";
    $mjpegmode = 0;
    if(isset($_COOKIE["stream_mode"])) {
@@ -187,14 +187,33 @@
       <script src="js/pipan.js"></script>
    </head>
    <body onload="setTimeout('init(<?php echo "$mjpegmode, $video_fps, $divider" ?>);', 100);">
-      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation" <?php echo $displayStyle; ?>>
-         <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+         <div class="container-fluid">
             <div class="navbar-header">
-               <a class="navbar-brand" href="#"><?php echo CAM_STRING; ?></a>
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#"><?php echo CAM_STRING; ?></a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">System <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li><p class="navbar-btn"><a id="shutdown_button" type="button" onclick="sys_shutdown();" class="nav-btn btn btn-danger"><span class='glyphicon glyphicon-off'></span> Shutdown</a></p></li>
+                    <li><p class="navbar-btn"><a id="reboot_button" type="button" onclick="sys_reboot();" class="btn btn-danger"><span class="glyphicon glyphicon-repeat"></span> Reboot</a></p></li>
+                    <li role="separator" class="divider"></li>
+                    <li><p class="navbar-btn"><a id="reset_button" type="button" onclick="send_cmd('rs 1');setTimeout(function(){location.reload(true);}, 1000);" class="btn btn-warning"><span class="glyphicon glyphicon-warning-sign"></span> Reset Settings</a></p></li>
+                  </ul>
+                </li>
+              </ul>
             </div>
          </div>
       </div>
-      <input id="toggle_display" type="button" class="btn btn-primary" value="<?php echo $toggleButton; ?>" style="position:absolute;top:60px;right:10px;" onclick="set_display(this.value);">
       <div class="container-fluid text-center liveimage">
          <div><img id="mjpeg_dest" <?php echo getLoadClass() . getImgWidth();?> <?php if(file_exists("pipan_on")) echo "ontouchstart=\"pipan_start()\""; ?> onclick="toggle_fullscreen(this);" src="./loading.jpg"></div>
          <div id="main-buttons" <?php echo $displayStyle; ?> >
@@ -212,7 +231,7 @@
          <?php  if($config['motion_external']): ?><a href="motion.php" class="btn btn-default">Edit motion settings</a>&nbsp;&nbsp;<?php endif; ?>
          <a href="schedule.php" class="btn btn-default">Edit schedule settings</a>
       </div>
-    
+
       <div class="container-fluid text-center">
          <div class="panel-group" id="accordion" <?php echo $displayStyle; ?> >
             <div class="panel panel-default">
@@ -241,7 +260,7 @@
                               <input type="button" value="OK" onclick="set_res();">
                            </td>
                         </tr>
-                        <?php  if($config['camera_num'] > 0): ?> 
+                        <?php  if($config['camera_num'] > 0): ?>
                         <tr>
                            <td>Camera select (Compute module only)</td>
                            <td>
@@ -464,28 +483,6 @@
                            <td><select onchange="send_cmd('mf ' + this.value);"><?php makeOptions($options_mf, 'motion_file'); ?></select></td>
                         </tr>
                      </table>
-                  </div>
-               </div>
-            </div>
-            <div class="panel panel-default">
-               <div class="panel-heading">
-                  <h2 class="panel-title">
-                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">System</a>
-                  </h2>
-               </div>
-               <div id="collapseThree" class="panel-collapse collapse">
-                  <div class="panel-body">
-                     <input id="toggle_stream" type="button" class="btn btn-primary" value="<?php echo $streamButton; ?>" onclick="set_stream_mode(this.value);">
-                     <input id="shutdown_button" type="button" value="shutdown system" onclick="sys_shutdown();" class="btn btn-danger">
-                     <input id="reboot_button" type="button" value="reboot system" onclick="sys_reboot();" class="btn btn-danger">
-                     <input id="reset_button" type="button" value="reset settings" onclick="send_cmd('rs 1');setTimeout(function(){location.reload(true);}, 1000);" class="btn btn-danger">
-                     <form action='<?php echo ROOT_PHP; ?>' method='POST'>
-                        <br>Style
-                        <select name='extrastyle' id='extrastyle'>
-                           <?php getExtraStyles(); ?>
-                        </select>
-                        &nbsp;<button type="submit" name="OK" value="OK" >OK</button>
-                     </form>
                   </div>
                </div>
             </div>

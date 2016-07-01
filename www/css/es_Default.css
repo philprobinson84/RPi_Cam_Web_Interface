@@ -1,1 +1,7 @@
 /*! default extra styles no changes */
+p.navbar-btn a.btn {
+  width: 90%;
+  width: calc(100% - 20px);
+  margin-left: 5%;
+  margin-left: calc(20px / 2);
+}

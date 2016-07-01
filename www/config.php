@@ -6,19 +6,19 @@
    define('APP_VERSION', 'v6.2.3');
 
    // name of this application
-   define('APP_NAME', 'RPi Cam Control');
+   define('APP_NAME', 'SmartCam');
 
    // the host running the application
    define('HOST_NAME', php_uname('n'));
-   
+
    //define main starting php
    define('ROOT_PHP', 'index.php');
 
    // name of this camera
-   define('CAM_NAME', 'mycam');
+   define('CAM_NAME', 'StreetCam');
 
    // unique camera string build from application name, camera name, host name
-   define('CAM_STRING', APP_NAME . " " . APP_VERSION . ": " . CAM_NAME . '@' . HOST_NAME);
+   define('CAM_STRING', APP_NAME . " - " . CAM_NAME);
 
    // file where default settings changes are stored
    define('CONFIG_FILE1', 'raspimjpeg');
@@ -28,13 +28,13 @@
 
    // file where user specific settings changes are stored
    define('MEDIA_PATH', 'media');
-   
+
    // character used to flatten file paths
    define('SUBDIR_CHAR', '@');
 
    // character used to flatten file paths
    define('THUMBNAIL_EXT', '.th.jpg');
-   
+
    // file where a debug file is stored
    define('LOGFILE_DEBUG', 'debugLog.txt');
 
@@ -98,7 +98,7 @@
    }
 
    // functions to find and delete data files
-   
+
    function getSortedFiles($ascending = true) {
       $scanfiles = scandir(LBASE_DIR . '/' . MEDIA_PATH);
       $files = array();
@@ -106,7 +106,7 @@
          if(($file != '.') && ($file != '..') && isThumbnail($file)) {
             $fDate = filemtime(LBASE_DIR . '/' . MEDIA_PATH . "/$file");
             $files[$file] = $fDate;
-         } 
+         }
       }
       if ($ascending)
          asort($files);
@@ -114,7 +114,7 @@
          arsort($files);
       return array_keys($files);
    }
-   
+
    function findLapseFiles($d) {
       //return an arranged in time order and then must have a matching 4 digit batch and an incrementing lapse number
       $batch = getFileIndex($d);
@@ -142,7 +142,7 @@
             $lapsefiles[] = "$path/$key";
             $lapseCount++;
          } else {
-            break;   
+            break;
          }
       }
       return $lapsefiles;
@@ -166,7 +166,7 @@
    //if $del = false just calculate space which would be freed
    function deleteFile($d, $del = true) {
       $size = 0;
-      $t = getFileType($d); 
+      $t = getFileType($d);
       if ($t == 't') {
          // For time lapse try to delete all from this batch
          $files = findLapseFiles($d);
@@ -189,48 +189,48 @@
       if ($del) unlink(LBASE_DIR . '/' . MEDIA_PATH . "/$d");
       return $size / 1024;
    }
-   
+
    //Support naming functions
    function dataFilename($file) {
       $i = strrpos($file, '.', -8);
       if ($i !== false)
          return str_replace(SUBDIR_CHAR, '/', substr($file, 0, $i));
       else
-         return ""; 
+         return "";
    }
 
    function dataFileext($file) {
       $f = dataFileName($file);
-      return fileext($f); 
+      return fileext($f);
    }
-   
+
    function fileext($f) {
       if ($f <> "") {
          $i = strrpos($f, '.');
          if ($i !== false)
             return substr($f, $i+1);
       }
-      return ""; 
+      return "";
    }
 
    function isThumbnail($file) {
       return (substr($file, -7) == THUMBNAIL_EXT);
    }
-   
+
    function getFileType($file) {
       $i = strrpos($file, '.', -8);
       if ($i !== false)
          return substr($file, $i + 1, 1);
       else
-         return ""; 
+         return "";
    }
-   
+
    function getFileIndex($file) {
       $i = strrpos($file, '.', -8);
       if ($i !== false)
          return substr($file, $i + 2, strlen($file) - $i - 9);
       else
-         return ""; 
+         return "";
    }
 
    function getLogFile() {
@@ -240,7 +240,7 @@
       else
          return LBASE_DIR . '/' . LOGFILE_SCHEDULE;
    }
-   
+
    function getStyle() {
       return 'css/' . file_get_contents(BASE_DIR . '/css/extrastyle.txt');
    }

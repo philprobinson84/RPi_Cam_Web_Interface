@@ -10,7 +10,7 @@ function toggle_fullscreen(e) {
     background.id = "background";
     document.body.appendChild(background);
   }
-  
+
   if(e.className == "fullscreen") {
     e.className = "";
     background.style.display = "none";
@@ -27,7 +27,7 @@ function set_display(value) {
    var d = new Date();
    d.setTime(d.getTime() + (365*24*60*60*1000));
    var expires = "expires="+d.toUTCString();
-   
+
    if (value == "Simple") {
       show_hide = "none";
       document.getElementById("toggle_display").value = "Full";
@@ -45,11 +45,13 @@ function set_stream_mode(value) {
    var d = new Date();
    d.setTime(d.getTime() + (365*24*60*60*1000));
    var expires = "expires="+d.toUTCString();
-   
+
    if (value == "DefaultStream") {
       document.getElementById("toggle_stream").value = "MJPEG-Stream";
+      document.getElementById("toggle_stream").textContent = "MJPEG-Stream";
    } else {
       document.getElementById("toggle_stream").value = "Default-Stream";
+      document.getElementById("toggle_stream").textContent = "Default-Stream";
    }
    document.cookie="stream_mode=" + value + "; " + expires;
    document.location.reload(true);
@@ -66,13 +68,13 @@ function schedule_rows() {
    }
    var rows;
    rows = document.getElementsByClassName('sun');
-   for(i=0; i<rows.length; i++) 
+   for(i=0; i<rows.length; i++)
       rows[i].style.display = sun;
    rows = document.getElementsByClassName('day');
-   for(i=0; i<rows.length; i++) 
+   for(i=0; i<rows.length; i++)
       rows[i].style.display = day;
    rows = document.getElementsByClassName('fixed');
-   for(i=0; i<rows.length; i++) 
+   for(i=0; i<rows.length; i++)
       rows[i].style.display = fixed;
 }
 
@@ -84,7 +86,7 @@ function set_preset(value) {
   document.getElementById("MP4Box_fps").value = values[3];
   document.getElementById("image_width").value = values[4];
   document.getElementById("image_height").value = values[5];
-  
+
   set_res();
 }
 
@@ -161,12 +163,12 @@ function updatePreview(cycle)
          setTimeout("mjpeg_img.src = \"cam_pic_new.php?time=\" + new Date().getTime()  + \"&pDelay=\" + preview_delay;", 1000);
          return;
       }
-      
+
       if (previous_halted != halted)
       {
          if(!halted)
          {
-            mjpeg_img.src = "cam_pic_new.php?time=" + new Date().getTime() + "&pDelay=" + preview_delay;			
+            mjpeg_img.src = "cam_pic_new.php?time=" + new Date().getTime() + "&pDelay=" + preview_delay;
          }
          else
          {
@@ -382,7 +384,7 @@ ajax_status.onreadystatechange = function() {
 	    updatePreview();
     }
     else if(ajax_status.responseText.substr(0,5) == "Error") alert("Error in RaspiMJPEG: " + ajax_status.responseText.substr(7) + "\nRestart RaspiMJPEG (./RPi_Cam_Web_Interface_Installer.sh start) or the whole RPi.");
-    
+
     reload_ajax(ajax_status.responseText);
 
   }
@@ -401,7 +403,7 @@ function get_zip_progress(zipname) {
    else {
       ajax_zip = new ActiveXObject("Microsoft.XMLHTTP");
    }
-   
+
    ajax_zip.onreadystatechange = function() {
       if(ajax_zip.readyState == 4 && ajax_zip.status == 200) {
          if (process_zip_progress(ajax_zip.responseText)) {
