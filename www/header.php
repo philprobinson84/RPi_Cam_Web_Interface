@@ -240,4 +240,4 @@ switch ($thisPage)
     break;
 }
    ?>
-   <body onload="<?php echo $onloadString;?>">
+   <body onload="<?php echo $onloadString;?>" <?php if ($thisPage == "multi.php") {echo "id='noTopPadding'";}?>>
