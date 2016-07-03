@@ -18,7 +18,7 @@
    define('CAM_NAME', 'StreetCam');
 
    // unique camera string build from application name, camera name, host name
-   define('CAM_STRING', APP_NAME . " - " . CAM_NAME);
+   define('CAM_STRING', HOST_NAME);
 
    // file where default settings changes are stored
    define('CONFIG_FILE1', 'raspimjpeg');
